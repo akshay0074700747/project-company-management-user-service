@@ -11,4 +11,7 @@ type UserAdapterInterfaces interface {
 	UpdateStatus(entities.Status) error
 	IsUserStatusExist(entities.Status) (bool, error)
 	GetIDbyEmail(string)(string,error)
+	SearchUsers(uint)([]entities.SearchUsecase,error)
+	GetUserDetails(string) (entities.User,error)
+	GetRolebyID(uint)(string,error)
 }

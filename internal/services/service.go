@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"errors"
+	"io"
 
 	"github.com/akshay0074700747/projectandCompany_management_protofiles/pb/authpb"
 	"github.com/akshay0074700747/projectandCompany_management_protofiles/pb/userpb"
@@ -10,6 +11,7 @@ import (
 	"github.com/akshay0074700747/projectandCompany_management_user-service/helpers"
 	"github.com/akshay0074700747/projectandCompany_management_user-service/internal/usecases"
 	"github.com/golang/protobuf/ptypes/empty"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type UserServiceServer struct {
@@ -27,16 +29,16 @@ func NewUserServiceServer(usecase usecases.UserUsecaseInterfaces, authAddr strin
 	}
 }
 
-func (user *UserServiceServer) Signupuser(ctx context.Context, req *userpb.SignupUserRequest) (*userpb.UserResponce, error) {
+func (user *UserServiceServer) SignupUser(ctx context.Context, req *userpb.SignupUserRequest) (*userpb.UserResponce, error) {
 
 	res, err := user.Usecase.SignupUser(entities.User{
 		Name:  req.Name,
 		Email: req.Email,
 		Phone: req.Mobile,
-	})
+	}, req.Password)
 	if err != nil {
 		helpers.PrintErr(err, "error at signup user usecase")
-		return nil, errors.New("sorry for the inconveniance...Cannot onboard new users now. Please Try again later")
+		return nil, err
 	}
 
 	if _, err = user.AuthConn.InsertUser(ctx, &authpb.InsertUserReq{
@@ -61,7 +63,7 @@ func (user *UserServiceServer) GetRoles(emp *empty.Empty, stream userpb.UserServ
 	res, err := user.Usecase.GetRoles()
 	if err != nil {
 		helpers.PrintErr(err, "error at getroles usecase")
-		return errors.New("cannot handle user request now , please try again later...")
+		return errors.New("cannot handle user request now , please try again later")
 	}
 
 	for _, v := range res {
@@ -102,4 +104,147 @@ func (user *UserServiceServer) GetByEmail(ctx context.Context, req *userpb.GetBy
 	return &userpb.GetByEmailRes{
 		UserID: res,
 	}, nil
+}
+
+func (user *UserServiceServer) AddRoles(ctx context.Context, req *userpb.AddRoleReq) (*emptypb.Empty, error) {
+
+	if _, err := user.Usecase.AddRole(entities.Roles{
+		Role: req.Role,
+	}); err != nil {
+		helpers.PrintErr(err, "error at AddRole usecase")
+		return nil, err
+	}
+
+	return &emptypb.Empty{}, nil
+}
+
+func (user *UserServiceServer) SearchforMembers(req *userpb.SearchReq, stream userpb.UserService_SearchforMembersServer) error {
+
+	res, err := user.Usecase.SearchUsers(uint(req.RoleID))
+	if err != nil {
+		helpers.PrintErr(err, "error occured at SearchUsers usecase")
+		return errors.New("cannot search now... please try agin later")
+	}
+
+	for _, v := range res {
+		if err := stream.Send(&userpb.SearchRes{
+			Name:  v.Name,
+			Email: v.Email,
+		}); err != nil {
+			helpers.PrintErr(err, "error at sending stream")
+			return errors.New("cannot serch now please try again later")
+		}
+	}
+
+	return nil
+}
+
+func (user *UserServiceServer) GetUserDetails(mctx context.Context, req *userpb.GetUserDetailsReq) (*userpb.GetUserDetailsRes, error) {
+
+	var err error
+	res, err := user.Usecase.GetUserDetails(req.UserID)
+	if err != nil {
+		helpers.PrintErr(err, "error at GetUserDetails usecase")
+		return nil, err
+	}
+
+	result := &userpb.GetUserDetailsRes{
+		UserID: req.UserID,
+		Email:  res.Email,
+		Mobile: res.Phone,
+		Name:   res.Name,
+	}
+
+	if req.RoleID != 0 {
+		result.Role, err = user.Usecase.GetRolebyID(uint(req.RoleID))
+		if err != nil {
+			helpers.PrintErr(err, "error at GetRolebyID usecase")
+			return nil, err
+		}
+	}
+
+	return result, err
+}
+
+func (user *UserServiceServer) GetRole(ctx context.Context, req *userpb.GetRoleReq) (*userpb.GetRoleRes, error) {
+
+	role, err := user.Usecase.GetRolebyID(uint(req.ID))
+	if err != nil {
+		helpers.PrintErr(err, "error at GetRolebyID usecase")
+		return nil, err
+	}
+
+	return &userpb.GetRoleRes{
+		Role: role,
+	}, nil
+}
+
+func (user *UserServiceServer) GetStreamofRoles(stream userpb.UserService_GetStreamofRolesServer) error {
+	var roleIDs []uint
+	for {
+		req, err := stream.Recv()
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			helpers.PrintErr(err, "error at recieving from stream")
+			return err
+		}
+		roleIDs = append(roleIDs, uint(req.RoleID))
+	}
+
+	res, err := user.Usecase.GetStreamofRoles(roleIDs)
+	if err != nil {
+		helpers.PrintErr(err, "error at GetStreamofRoles usecase")
+		return err
+	}
+
+	if err := stream.SendAndClose(&userpb.GetStreamofRolesRes{
+		RoleIDsWithNames: res,
+	}); err != nil {
+		helpers.PrintErr(err, "error at sending to stream")
+		return err
+	}
+
+	return nil
+}
+
+func (user *UserServiceServer) GetStreamofUserDetails(stream userpb.UserService_GetStreamofUserDetailsServer) error {
+	var role string
+	var userr entities.User
+	for {
+		req, err := stream.Recv()
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			helpers.PrintErr(err, "error at reci to stream")
+			return err
+		}
+		if req.RoleID != 0 {
+			role, err = user.Usecase.GetRolebyID(uint(req.RoleID))
+			if err != nil {
+				helpers.PrintErr(err, "error at GetRolebyID usecase")
+				return err
+			}
+		}
+		userr, err = user.Usecase.GetUserDetails(req.UserID)
+		if err != nil {
+			helpers.PrintErr(err, "error at GetUserDetails usecase")
+			return err
+		}
+
+		if err = stream.Send(&userpb.GetUserDetailsRes{
+			UserID: userr.UserID,
+			Mobile: userr.Phone,
+			Email:  userr.Email,
+			Name:   userr.Name,
+			Role:   role,
+		}); err != nil {
+			helpers.PrintErr(err, "error at sending to stream")
+			return err
+		}
+	}
+
+	return nil
 }

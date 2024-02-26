@@ -18,7 +18,7 @@ func NewUserUsecases(adapter adapters.UserAdapterInterfaces) *UserUsecases {
 	}
 }
 
-func (user *UserUsecases) SignupUser(req entities.User) (entities.User, error) {
+func (user *UserUsecases) SignupUser(req entities.User, pass string) (entities.User, error) {
 
 	if req.Name == "" {
 		return entities.User{}, errors.New("the name field cannot be empty")
@@ -27,15 +27,20 @@ func (user *UserUsecases) SignupUser(req entities.User) (entities.User, error) {
 	isValid, err := helpers.IsValidEmail(req.Email)
 	if err != nil {
 		helpers.PrintErr(err, "error occured while validating emial")
-		return entities.User{}, errors.New("cannot verify email right now!")
+		return entities.User{}, err
 	}
 
 	if !isValid {
-		return entities.User{}, errors.New("the given email format is not valid!")
+		return entities.User{}, errors.New("the given email format is not valid")
 	}
 
 	if !helpers.IsValidPhoneNumber(req.Phone) {
-		return entities.User{}, errors.New("the given phone number format is not valid!")
+		return entities.User{}, errors.New("the given phone number format is not valid")
+	}
+
+	//i am checking the password here , even though the password is not stored here but in auth service , because the user is getting inserted into the database eventhough the password is not secure
+	if !helpers.IsSecurePassword(pass) {
+		return entities.User{}, errors.New("the password is not secure")
 	}
 
 	req.UserID = helpers.GenUuid()
@@ -57,10 +62,10 @@ func (user *UserUsecases) AddRole(req entities.Roles) (entities.Roles, error) {
 	}
 
 	if isExisting {
-		return entities.Roles{}, errors.New("role already exists...")
+		return entities.Roles{}, errors.New("role already exists")
 	}
 
-	res, err := user.AddRole(req)
+	res, err := user.Adapter.AddRole(req)
 	if err != nil {
 		return res, err
 	}
@@ -110,4 +115,53 @@ func (user *UserUsecases) GetIDbyEmail(email string) (string, error) {
 	}
 
 	return res, nil
+}
+
+func (user *UserUsecases) SearchUsers(roleID uint) ([]entities.SearchUsecase, error) {
+
+	res, err := user.Adapter.SearchUsers(roleID)
+	if err != nil {
+		helpers.PrintErr(err, "error occure on SearchUsers adapter")
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func (user *UserUsecases) GetUserDetails(userID string) (entities.User, error) {
+
+	res, err := user.Adapter.GetUserDetails(userID)
+	if err != nil {
+		helpers.PrintErr(err, "error at GetUserDetails adapter")
+		return entities.User{}, err
+	}
+
+	return res, nil
+}
+
+func (usr *UserUsecases) GetRolebyID(id uint) (string, error) {
+
+	res, err := usr.Adapter.GetRolebyID(id)
+	if err != nil {
+		helpers.PrintErr(err, "error at GetUserDetails adapter")
+		return "", err
+	}
+
+	return res, nil
+}
+
+func (usr *UserUsecases) GetStreamofRoles([]uint) (map[uint32]string, error) {
+
+	var resMap = make(map[uint32]string)
+	res, err := usr.Adapter.GetRoles()
+	if err != nil {
+		helpers.PrintErr(err, "error at GetRoles adapter")
+		return nil, err
+	}
+
+	for _, v := range res {
+		resMap[uint32(v.ID)] = v.Role
+	}
+
+	return resMap, nil
 }

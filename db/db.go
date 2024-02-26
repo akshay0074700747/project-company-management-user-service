@@ -22,6 +22,10 @@ func ConnectDB(cfg config.Config) *gorm.DB {
 	}
 
 	db.AutoMigrate(&entities.User{})
+	db.AutoMigrate(&entities.Roles{})
+	db.AutoMigrate(&entities.RolesandCompanies{})
+	db.AutoMigrate(&entities.Status{})
+	db.AutoMigrate(&entities.RolesandProjects{})
 
 	return db
 }

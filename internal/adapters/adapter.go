@@ -18,7 +18,7 @@ func NewUserAdapter(db *gorm.DB) *UserAdapter {
 
 func (user *UserAdapter) SignupUser(req entities.User) (entities.User, error) {
 
-	query := "INSERT INTO carts (name,email,phone) VALUES($1,$2,$3) RETURNING user_id,name,email,phone"
+	query := "INSERT INTO users (user_id,name,email,phone) VALUES($1,$2,$3,$4) RETURNING user_id,name,email,phone"
 	var res entities.User
 
 	tx := user.DB.Begin()
@@ -28,7 +28,7 @@ func (user *UserAdapter) SignupUser(req entities.User) (entities.User, error) {
 		}
 	}()
 
-	if err := user.DB.Raw(query, req.Name, req.Email, req.Phone).Scan(&res).Error; err != nil {
+	if err := user.DB.Raw(query, req.UserID, req.Name, req.Email, req.Phone).Scan(&res).Error; err != nil {
 		helpers.PrintErr(err, "error on signup adapter")
 		tx.Rollback()
 		return entities.User{}, err
@@ -145,3 +145,40 @@ func (user *UserAdapter) GetIDbyEmail(email string) (string, error) {
 
 	return res, nil
 }
+
+func (user *UserAdapter) SearchUsers(roleID uint) ([]entities.SearchUsecase, error) {
+
+	query := "SELECT a.name,a.email FROM users a INNER JOIN statuses b ON a.user_id = b.user_id AND b.role_id = $1 AND b.available = true"
+	var res []entities.SearchUsecase
+
+	if err := user.DB.Raw(query, roleID).Scan(&res).Error; err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func (user *UserAdapter) GetUserDetails(userID string) (entities.User, error) {
+
+	query := "SELECT * FROM users WHERE user_id = $1"
+	var res entities.User
+
+	if err := user.DB.Raw(query, userID).Scan(&res).Error; err != nil {
+		return entities.User{}, err
+	}
+
+	return res, nil
+}
+
+func (usr *UserAdapter) GetRolebyID(id uint) (string, error) {
+
+	query := "SELECT role from roles where id = $1"
+	var res string
+
+	if err := usr.DB.Raw(query, id).Scan(&res).Error; err != nil {
+		return "", err
+	}
+
+	return res, nil
+}
+

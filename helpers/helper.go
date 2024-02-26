@@ -3,6 +3,7 @@ package helpers
 import (
 	"fmt"
 	"regexp"
+	"unicode"
 
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
@@ -38,4 +39,37 @@ func IsValidPhoneNumber(phoneNumber string) bool {
 	regex := regexp.MustCompile(pattern)
 
 	return regex.MatchString(phoneNumber)
+}
+
+func IsSecurePassword(password string) bool {
+
+	if len(password) < 8 {
+		return false
+	}
+
+	var (
+		hasUpperCase bool
+		hasLowerCase bool
+		hasNumber    bool
+		hasSpecial   bool
+	)
+
+	for _, char := range password {
+		switch {
+		case unicode.IsUpper(char):
+			hasUpperCase = true
+		case unicode.IsLower(char):
+			hasLowerCase = true
+		case unicode.IsNumber(char):
+			hasNumber = true
+		case unicode.IsPunct(char) || unicode.IsSymbol(char):
+			hasSpecial = true
+		}
+	}
+
+	if !hasUpperCase || !hasLowerCase || !hasNumber || !hasSpecial {
+		return false
+	}
+
+	return true
 }

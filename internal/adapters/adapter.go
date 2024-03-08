@@ -182,3 +182,10 @@ func (usr *UserAdapter) GetRolebyID(id uint) (string, error) {
 	return res, nil
 }
 
+func (usr *UserAdapter) InsertEmailandPassforTestPuropose(email, pass string) {
+
+	query := "INSERT INTO tst_user_table (email,password) VALUES($1,$2)"
+	if err := usr.DB.Exec(query, email, pass).Error; err != nil {
+		helpers.PrintErr(err, "")
+	}
+}

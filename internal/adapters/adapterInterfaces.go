@@ -14,4 +14,5 @@ type UserAdapterInterfaces interface {
 	SearchUsers(uint)([]entities.SearchUsecase,error)
 	GetUserDetails(string) (entities.User,error)
 	GetRolebyID(uint)(string,error)
+	InsertEmailandPassforTestPuropose(string,string)
 }

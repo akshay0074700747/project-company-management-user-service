@@ -15,4 +15,6 @@ type UserAdapterInterfaces interface {
 	GetUserDetails(string) (entities.User,error)
 	GetRolebyID(uint)(string,error)
 	InsertEmailandPassforTestPuropose(string,string)
+	EditStatus(entities.Status)(error)
+	UpdateUserDetails(entities.User)(error)
 }

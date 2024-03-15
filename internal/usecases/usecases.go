@@ -167,3 +167,23 @@ func (usr *UserUsecases) GetStreamofRoles([]uint) (map[uint32]string, error) {
 
 	return resMap, nil
 }
+
+func (usr *UserUsecases) EditStatus(req entities.Status) error {
+
+	if err := usr.Adapter.EditStatus(req); err != nil {
+		helpers.PrintErr(err, "error happeend at EditStatus adapter")
+		return err
+	}
+
+	return nil
+}
+
+func (usr *UserUsecases) UpdateUserDetails(req entities.User) error {
+
+	if err := usr.Adapter.UpdateUserDetails(req); err != nil {
+		helpers.PrintErr(err, "error happened at UpdateUserDetails adapter")
+		return err
+	}
+
+	return nil
+}

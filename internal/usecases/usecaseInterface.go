@@ -12,4 +12,6 @@ type UserUsecaseInterfaces interface {
 	GetUserDetails(string) (entities.User, error)
 	GetRolebyID(uint)(string,error)
 	GetStreamofRoles([]uint)(map[uint32]string,error)
+	EditStatus(entities.Status)(error)
+	UpdateUserDetails(entities.User)(error)
 }

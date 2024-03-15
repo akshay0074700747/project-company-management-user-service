@@ -248,3 +248,33 @@ func (user *UserServiceServer) GetStreamofUserDetails(stream userpb.UserService_
 
 	return nil
 }
+
+func (user *UserServiceServer) EditStatus(ctx context.Context, req *userpb.EditStatusReq) (*emptypb.Empty, error) {
+
+	if err := user.Usecase.EditStatus(entities.Status{
+		RoleID:    uint(req.RoleID),
+		Available: req.IsAvailable,
+		UserID:    req.UserID,
+	}); err != nil {
+		helpers.PrintErr(err, "error happened at EditStatus usease")
+		return nil, err
+	}
+
+	return &emptypb.Empty{}, nil
+}
+
+func (user *UserServiceServer) UpdateUserDetails(ctx context.Context, req *userpb.UpdateUserDetailsReq) (*emptypb.Empty, error) {
+
+	if err := user.Usecase.UpdateUserDetails(entities.User{
+		Name:   req.Name,
+		Email:  req.Email,
+		Phone:  req.Mobile,
+		UserID: req.UserID,
+	}); err != nil {
+		helpers.PrintErr(err, "errro happened at UpdateUserDetails adapter")
+		return nil, err
+	}
+
+	return &emptypb.Empty{}, nil
+}
+

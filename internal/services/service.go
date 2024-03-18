@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 
 	"github.com/akshay0074700747/projectandCompany_management_protofiles/pb/authpb"
@@ -31,6 +32,7 @@ func NewUserServiceServer(usecase usecases.UserUsecaseInterfaces, authAddr strin
 
 func (user *UserServiceServer) SignupUser(ctx context.Context, req *userpb.SignupUserRequest) (*userpb.UserResponce, error) {
 
+	fmt.Println(req.Password, "---------here")
 	res, err := user.Usecase.SignupUser(entities.User{
 		Name:  req.Name,
 		Email: req.Email,
@@ -277,4 +279,3 @@ func (user *UserServiceServer) UpdateUserDetails(ctx context.Context, req *userp
 
 	return &emptypb.Empty{}, nil
 }
-

@@ -2,7 +2,7 @@ package usecases
 
 import (
 	"errors"
-
+	"fmt"
 	"github.com/akshay0074700747/projectandCompany_management_user-service/entities"
 	"github.com/akshay0074700747/projectandCompany_management_user-service/helpers"
 	"github.com/akshay0074700747/projectandCompany_management_user-service/internal/adapters"
@@ -39,6 +39,9 @@ func (user *UserUsecases) SignupUser(req entities.User, pass string) (entities.U
 	}
 
 	//i am checking the password here , even though the password is not stored here but in auth service , because the user is getting inserted into the database eventhough the password is not secure
+	
+	fmt.Println("here----",pass)
+	
 	if !helpers.IsSecurePassword(pass) {
 		return entities.User{}, errors.New("the password is not secure")
 	}

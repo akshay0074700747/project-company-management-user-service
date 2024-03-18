@@ -18,6 +18,8 @@ github.com/akshay0074700747/projectandCompany_management_protofiles v0.0.0-20240
 github.com/akshay0074700747/projectandCompany_management_protofiles v0.0.0-20240226044132-a5277e9db44b/go.mod h1:ha0hWcBD7MAUTiZOnLbec17eqFtMDdfr3d7rpORXhWo=
 github.com/akshay0074700747/projectandCompany_management_protofiles v0.0.0-20240313050234-24ba5a4a64b0 h1:cFdtRY4mELECZJq+T1fbPZEwk7YCDmYDClqO71A4MXc=
 github.com/akshay0074700747/projectandCompany_management_protofiles v0.0.0-20240313050234-24ba5a4a64b0/go.mod h1:ha0hWcBD7MAUTiZOnLbec17eqFtMDdfr3d7rpORXhWo=
+github.com/akshay0074700747/projectandCompany_management_protofiles v0.0.0-20240315064300-bddfbd253fbf h1:09/85rgaShSUJ1ZNBQ2G0QfL3AKZJxZ+McH2K014jm0=
+github.com/akshay0074700747/projectandCompany_management_protofiles v0.0.0-20240315064300-bddfbd253fbf/go.mod h1:ha0hWcBD7MAUTiZOnLbec17eqFtMDdfr3d7rpORXhWo=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/golang/protobuf v1.5.0/go.mod h1:FsONVRAS9T7sI+LIUmWTfcYkHO4aIWwzhcaSAoJOfIk=
 github.com/golang/protobuf v1.5.3 h1:KhyjKVUg7Usr/dYsdSqoFveMYd5ko72D+zANwlG1mmg=
@@ -78,6 +80,8 @@ google.golang.org/genproto/googleapis/rpc v0.0.0-20240221002015-b0ce06bbee7c h1:
 google.golang.org/genproto/googleapis/rpc v0.0.0-20240221002015-b0ce06bbee7c/go.mod h1:H4O17MA/PE9BsGx3w+a+W2VOLLD1Qf7oJneAoU6WktY=
 google.golang.org/genproto/googleapis/rpc v0.0.0-20240311173647-c811ad7063a7 h1:8EeVk1VKMD+GD/neyEHGmz7pFblqPjHoi+PGQIlLx2s=
 google.golang.org/genproto/googleapis/rpc v0.0.0-20240311173647-c811ad7063a7/go.mod h1:WtryC6hu0hhx87FDGxWCDptyssuo68sk10vYjF+T9fY=
+google.golang.org/genproto/googleapis/rpc v0.0.0-20240314234333-6e1732d8331c h1:lfpJ/2rWPa/kJgxyyXM8PrNnfCzcmxJ265mADgwmvLI=
+google.golang.org/genproto/googleapis/rpc v0.0.0-20240314234333-6e1732d8331c/go.mod h1:WtryC6hu0hhx87FDGxWCDptyssuo68sk10vYjF+T9fY=
 google.golang.org/grpc v1.61.0 h1:TOvOcuXn30kRao+gfcvsebNEa5iZIiLkisYEkf7R7o0=
 google.golang.org/grpc v1.61.0/go.mod h1:VUbo7IFqmF1QtCAstipjG0GIoq49KvMe9+h1jFLBNJs=
 google.golang.org/grpc v1.61.1 h1:kLAiWrZs7YeDM6MumDe7m3y4aM6wacLzM1Y/wiLP9XY=

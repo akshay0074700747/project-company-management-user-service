@@ -192,7 +192,7 @@ func (usr *UserAdapter) InsertEmailandPassforTestPuropose(email, pass string) {
 
 func (usr *UserAdapter) EditStatus(req entities.Status) error {
 
-	if err := usr.DB.Model(&entities.Status{}).Where("user_id = $1", req.UserID).Updates(req).Error; err != nil {
+	if err := usr.DB.Model(&entities.Status{}).Where("user_id = ?", req.UserID).Updates(req).Error; err != nil {
 		return err
 	}
 
@@ -201,7 +201,7 @@ func (usr *UserAdapter) EditStatus(req entities.Status) error {
 
 func (usr *UserAdapter) UpdateUserDetails(req entities.User)(error) {
 	
-	if err := usr.DB.Model(&entities.User{}).Where("user_id = $1", req.UserID).Updates(req).Error; err != nil {
+	if err := usr.DB.Model(&entities.User{}).Where("user_id = ?", req.UserID).Updates(req).Error; err != nil {
 		return err
 	}
 

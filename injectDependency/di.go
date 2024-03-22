@@ -13,7 +13,7 @@ func Initialize(cfg config.Config) *services.UserEngine {
 	db := db.ConnectDB(cfg)
 	adapter := adapters.NewUserAdapter(db)
 	usecase := usecases.NewUserUsecases(adapter)
-	server := services.NewUserServiceServer(usecase, ":50004")
+	server := services.NewUserServiceServer(usecase, "auth-service:50004")
 
 	return services.NewUserEngine(server)
 }
